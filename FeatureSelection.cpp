@@ -5,16 +5,18 @@
 #include <algorithm>
 using namespace std;
 
-double crossValidation(vector<int> currentSet, int featureToAdd){
-    double accuracy;
+double crossValidation(vector<int> currentSet, int featureToAdd, int numRows){
+    double accuracy = 0.0;
+    string line;
     ifstream data ("CS170_SuperSmall_Data__43.txt");
+
     data.close();
     accuracy = rand();
     return accuracy;
 }
 
-void feature_search_demo(){
-    unsigned int rowCounter = 0, columnCounter = 0, numFeatures = 0;
+void featureSearch(int numRows){
+    unsigned int numFeatures = 0;
     int featureToAddAtCurrentLevel = -1;
     double bestAccuracy = 0.0, accuracy = 0.0;
 
@@ -23,48 +25,55 @@ void feature_search_demo(){
     vector<int> currentSetOfFeatures;
 
     ifstream tempFile ("CS170_SuperSmall_Data__43.txt");
-    getline(tempFile,line);
+    getline(tempFile,line); // Retrieves First Line of Data
     stringstream ss(line);
     while (ss >> featureValue){
         numFeatures++;
     }
-    numFeatures = numFeatures - 1;
+    numFeatures = numFeatures - 1; //Counts the number of features minus class Value
     tempFile.close();
 
-    ifstream file ("CS170_SuperSmall_Data__43.txt");
+    ifstream file ("CS170_SuperSmall_Data__43.txt"); //Open file
 
-    for (unsigned int i = 1; i <= numFeatures; i++) {
-        cout << line << endl;
-        rowCounter++; //Current Row Number
+    for (unsigned int i = 1; i <= numFeatures; i++) { //Iterating through down the Search Tree
         cout << "On the " << i << "th level of the search tree" << endl;
         featureToAddAtCurrentLevel = -1;
         bestAccuracy = 0;
-        stringstream ss(line);
-        ss >> classValue; //Take in Class Value
 
-        while (ss >> featureValue){ //Every Value (Column) in Row Except Class Value
-            columnCounter++;
-            if (find(currentSetOfFeatures.begin(),currentSetOfFeatures.end(),columnCounter) == currentSetOfFeatures.end()){
-                cout << "--Considering adding the " << columnCounter << " feature" << endl;
-                accuracy = crossValidation(currentSetOfFeatures,columnCounter + 1);
+        for (unsigned int k = 1; k <= numFeatures; k++){ //Considers each feature separately
+            if (find(currentSetOfFeatures.begin(),currentSetOfFeatures.end(),k) == currentSetOfFeatures.end()){ // If the value is not in the current set of features
+                cout << "--Considering adding the " << k << " feature" << endl;  //Consider adding the feature
+                accuracy = crossValidation(currentSetOfFeatures,k + 1, numRows); //Calculate accuracy
 
                 if (accuracy > bestAccuracy){
                     bestAccuracy  = accuracy;
-                    featureToAddAtCurrentLevel = columnCounter;
+                    featureToAddAtCurrentLevel = k;
                 }
             }
         }
-        columnCounter = 0;
-        currentSetOfFeatures.push_back(featureToAddAtCurrentLevel);
+        currentSetOfFeatures.push_back(featureToAddAtCurrentLevel); //Add feature 
         cout << "On level: " << i << " I added feature " << featureToAddAtCurrentLevel << " to current set" << endl;
     }
+    file.close(); //Close file
+}
 
+int getNumRows(){
+    int numRows = 0;
+    string line;
+
+    ifstream file ("CS170_SuperSmall_Data__43.txt");
+    while (getline(file,line)){
+        numRows++;
+    }
     file.close();
+    return numRows;
 }
 
 int main(){
 
-    feature_search_demo();
+    int numRows = getNumRows();
+    
+    featureSearch(numRows);
 
     return 0;
 }
