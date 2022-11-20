@@ -19,10 +19,10 @@ vector<double> getClassLabels(){
     return classLabels;
 }
 
-double crossValidation(vector<int> currentSet, int featureToAdd, int numRows){
+double crossValidation(vector<int> currentSet, int featureToAdd, double numRows){
     double accuracy = 0.0, distance = 0.0;
 
-    unsigned int rowValue = 0, secondRowValue = 0, nearestNeighborDistance, nearestNeighborLocation, nearestNeighborLabel;
+    unsigned int rowValue = 0, secondRowValue = 0, numCorrectlyClassified = 0, nearestNeighborDistance, nearestNeighborLocation, nearestNeighborLabel;
 
     string line, classLabelToClassify, featureValue;
 
@@ -64,16 +64,18 @@ double crossValidation(vector<int> currentSet, int featureToAdd, int numRows){
                 }
             }
         }
+        if (stoi(classLabelToClassify) == nearestNeighborLabel){
+            numCorrectlyClassified++;
+        }
         secondRowValue = 0;
         objectToClassify.clear();
         objectToCompare.clear();
         data2.close();
-        cout << "Object " << rowValue << " is class " << classLabels.at(rowValue - 1) << endl;
-        cout << "It's nearest neighbor is " << nearestNeighborLocation << " which is in class " << nearestNeighborLabel << endl;
+        // cout << "Object " << rowValue << " is class " << classLabels.at(rowValue - 1) << endl;
+        // cout << "It's nearest neighbor is " << nearestNeighborLocation << " which is in class " << nearestNeighborLabel << endl;
     }
     data.close();
-
-    accuracy = rand();
+    accuracy = numCorrectlyClassified / numRows;
     return accuracy;
 }
 
@@ -118,8 +120,8 @@ void featureSearch(int numRows){
     file.close(); //Close file
 }
 
-int getNumRows(){
-    int numRows = 0;
+double getNumRows(){
+    double numRows = 0.0;
     string line;
 
     ifstream file ("CS170_SuperSmall_Data__43.txt");
@@ -132,11 +134,11 @@ int getNumRows(){
 
 int main(){
 
-    int numRows = getNumRows();
+    double numRows = getNumRows();
 
     // featureSearch(numRows);
     vector<int>test;
-    crossValidation(test,0,numRows);
+    cout << crossValidation(test,0,numRows) << endl;
 
     return 0;
 }
