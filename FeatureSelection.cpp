@@ -29,20 +29,19 @@ double crossValidation(vector<int> currentSet, int featureToAdd, double numRows)
     vector<double> objectToClassify, objectToCompare;
     vector<double> classLabels = getClassLabels();
 
-    ifstream data ("CS170_SuperSmall_Data__43.txt");
+    ifstream data ("CS170_SuperSmall_Data__43.txt"); //Open File
 
-    while (getline(data,line)){
+    while (getline(data,line)){  //Will only loop #Rows times
         stringstream ss(line);
-        ss >> classLabelToClassify;
+        ss >> classLabelToClassify; //Class label at current row
         while (ss >> featureValue){
             objectToClassify.push_back(stod(featureValue)); //Gets all feature values for current instance (row)
         }
-
         rowValue++;
         nearestNeighborDistance = 4294967295; //Unsigned Int Max Value
         nearestNeighborLocation = 4294967295;
 
-        ifstream data2 ("CS170_SuperSmall_Data__43.txt");
+        ifstream data2 ("CS170_SuperSmall_Data__43.txt"); //Open file again
 
         while (getline(data2,line)) { 
             stringstream ss(line);
@@ -51,28 +50,30 @@ double crossValidation(vector<int> currentSet, int featureToAdd, double numRows)
                 objectToCompare.push_back(stod(featureValue)); 
             }
             secondRowValue++;
+
             if (secondRowValue != rowValue) { //Not comparing same value to itself
                 for (unsigned int l = 0; l < objectToClassify.size(); ++l){ 
-                    for (unsigned int m = 0; m < objectToCompare.size(); ++m){
-                        distance = sqrt(pow(objectToClassify.at(l) - objectToCompare.at(m),2));
-                        if (distance < nearestNeighborDistance){
-                            nearestNeighborDistance = distance;
-                            nearestNeighborLocation = secondRowValue;
-                            nearestNeighborLabel = classLabels.at(nearestNeighborLocation - 1);
-                        }
-                    }
+                    distance += pow(objectToClassify.at(l) - objectToCompare.at(l),2);
+                }
+                distance = sqrt(distance); //Calculate distance using Euclidian Distance
+                if (distance < nearestNeighborDistance){ //Update nearest neighbor values
+                    nearestNeighborDistance = distance;
+                    nearestNeighborLocation = secondRowValue;
+                    nearestNeighborLabel = classLabels.at(nearestNeighborLocation-1);
                 }
             }
+            objectToCompare.clear(); //Clear vector since comparing new row
         }
+
         if (stoi(classLabelToClassify) == nearestNeighborLabel){
             numCorrectlyClassified++;
         }
+
         secondRowValue = 0;
-        objectToClassify.clear();
-        objectToCompare.clear();
+        objectToClassify.clear(); //Clear vector since classifying new row
         data2.close();
-        // cout << "Object " << rowValue << " is class " << classLabels.at(rowValue - 1) << endl;
-        // cout << "It's nearest neighbor is " << nearestNeighborLocation << " which is in class " << nearestNeighborLabel << endl;
+        cout << "Object " << rowValue << " is class " << classLabels.at(rowValue - 1) << endl;
+        cout << "It's nearest neighbor is " << nearestNeighborLocation << " which is in class " << nearestNeighborLabel << endl;
     }
     data.close();
     accuracy = numCorrectlyClassified / numRows;
