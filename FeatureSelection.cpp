@@ -7,10 +7,23 @@ using namespace std;
 
 double crossValidation(vector<int> currentSet, int featureToAdd, int numRows){
     double accuracy = 0.0;
-    string line;
+    unsigned int rowValue = 0, nearestNeighborDistance, nearestNeighborLocation; 
+    string line, objectToClassify, classLabelToClassify;
     ifstream data ("CS170_SuperSmall_Data__43.txt");
 
+    while (getline(data,line)){
+        //objectToClassify = ;
+        stringstream ss(line);
+        ss >> classLabelToClassify;
+        rowValue++;
+        nearestNeighborDistance = 4294967295; //Unsigned Int Max Value
+        nearestNeighborLocation = 4294967295;
+        for (unsigned int k = 1; k <= numRows; ++k) {
+            cout << "Ask if " << rowValue << " is nearest neighbor with " << k << endl;
+        }
+    }
     data.close();
+    
     accuracy = rand();
     return accuracy;
 }
@@ -44,7 +57,6 @@ void featureSearch(int numRows){
             if (find(currentSetOfFeatures.begin(),currentSetOfFeatures.end(),k) == currentSetOfFeatures.end()){ // If the value is not in the current set of features
                 cout << "--Considering adding the " << k << " feature" << endl;  //Consider adding the feature
                 accuracy = crossValidation(currentSetOfFeatures,k + 1, numRows); //Calculate accuracy
-
                 if (accuracy > bestAccuracy){
                     bestAccuracy  = accuracy;
                     featureToAddAtCurrentLevel = k;
@@ -72,8 +84,10 @@ int getNumRows(){
 int main(){
 
     int numRows = getNumRows();
-    
-    featureSearch(numRows);
+
+    // featureSearch(numRows);
+    vector<int>test;
+    crossValidation(test,0,numRows);
 
     return 0;
 }
