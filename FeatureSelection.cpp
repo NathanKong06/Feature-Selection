@@ -13,14 +13,23 @@ double crossValidation(vector<int> currentSet, int featureToAdd){\
 }
 
 void feature_search_demo(){
-    unsigned int counter = 0;
+    unsigned int rowCounter = 0;
+    unsigned int columnCounter = 0;
     string line;
     string featureValue;
+    string classValue;
     ifstream file ("CS170_SuperSmall_Data__43.txt");
     
     while (getline(file,line)) {
-        counter++;
-        cout << "On the " << counter << "th level of the search tree" << endl;
+        rowCounter++;
+        cout << "On the " << rowCounter << "th level of the search tree" << endl;
+        stringstream ss(line);
+        ss >> classValue;
+        while (ss >> featureValue){
+            columnCounter++;
+            cout << "--Considering adding the " << columnCounter << " feature" << endl;
+        }
+        columnCounter = 0;
     }
 
     // while (ss >> featureValue){
