@@ -3,26 +3,65 @@
 #include <vector>
 #include <sstream>
 #include <algorithm>
+#include <cmath>
 using namespace std;
 
+vector<double> getClassLabels(){
+    string line, classLabel;
+    vector<double> classLabels;
+    ifstream data ("CS170_SuperSmall_Data__43.txt");
+    while (getline(data,line)){
+        stringstream ss(line);
+        ss >> classLabel;
+        classLabels.push_back(stod(classLabel));
+    }
+    data.close();
+    return classLabels;
+}
+
 double crossValidation(vector<int> currentSet, int featureToAdd, int numRows){
-    double accuracy = 0.0;
-    unsigned int rowValue = 0, nearestNeighborDistance, nearestNeighborLocation; 
-    string line, objectToClassify, classLabelToClassify;
+    double accuracy = 0.0, distance = 0.0;
+
+    unsigned int rowValue = 0, secondRowValue = 0, nearestNeighborDistance, nearestNeighborLocation, nearestNeighborLabel;
+
+    string line, classLabelToClassify, featureValue;
+
+    vector<double> objectToClassify;
+    vector<double> classLabels = getClassLabels();
+
     ifstream data ("CS170_SuperSmall_Data__43.txt");
 
     while (getline(data,line)){
-        //objectToClassify = ;
         stringstream ss(line);
         ss >> classLabelToClassify;
+        while (ss >> featureValue){
+            objectToClassify.push_back(stod(featureValue));
+        }
+
         rowValue++;
         nearestNeighborDistance = 4294967295; //Unsigned Int Max Value
         nearestNeighborLocation = 4294967295;
-        for (unsigned int k = 1; k <= numRows; ++k) {
-            cout << "Ask if " << rowValue << " is nearest neighbor with " << k << endl;
+        ifstream data2 ("CS170_SuperSmall_Data__43.txt");
+        while (getline(data2,line)){
+            secondRowValue++;
+            if (secondRowValue != rowValue) {
+                cout << "Ask if " << rowValue << " is nearest neighbor with " << secondRowValue << endl;
+                for (unsigned int l = 0; l < objectToClassify.size(); ++l){
+                    distance = sqrt(1);
+                    if (distance < nearestNeighborDistance){
+                        nearestNeighborDistance = distance;
+                        nearestNeighborLocation = secondRowValue;
+                        nearestNeighborLabel = classLabels.at(nearestNeighborLocation - 1);
+                    }
+                }
+            }
         }
+        secondRowValue = 0;
+        objectToClassify.clear();
+        data2.close();
     }
     data.close();
+
     
     accuracy = rand();
     return accuracy;
