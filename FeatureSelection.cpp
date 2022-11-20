@@ -13,7 +13,7 @@ vector<double> getClassLabels(){
     while (getline(data,line)){
         stringstream ss(line);
         ss >> classLabel;
-        classLabels.push_back(stod(classLabel));
+        classLabels.push_back(stod(classLabel)); //Gets all class labels in file and adds to vector
     }
     data.close();
     return classLabels;
@@ -26,7 +26,7 @@ double crossValidation(vector<int> currentSet, int featureToAdd, int numRows){
 
     string line, classLabelToClassify, featureValue;
 
-    vector<double> objectToClassify;
+    vector<double> objectToClassify, objectToCompare;
     vector<double> classLabels = getClassLabels();
 
     ifstream data ("CS170_SuperSmall_Data__43.txt");
@@ -35,34 +35,44 @@ double crossValidation(vector<int> currentSet, int featureToAdd, int numRows){
         stringstream ss(line);
         ss >> classLabelToClassify;
         while (ss >> featureValue){
-            objectToClassify.push_back(stod(featureValue));
+            objectToClassify.push_back(stod(featureValue)); //Gets all feature values for current instance (row)
         }
 
         rowValue++;
         nearestNeighborDistance = 4294967295; //Unsigned Int Max Value
         nearestNeighborLocation = 4294967295;
+
         ifstream data2 ("CS170_SuperSmall_Data__43.txt");
-        while (getline(data2,line)){
+
+        while (getline(data2,line)) { 
+            stringstream ss(line);
+            ss >> classLabelToClassify;
+            while (ss >> featureValue){
+                objectToCompare.push_back(stod(featureValue)); 
+            }
             secondRowValue++;
-            if (secondRowValue != rowValue) {
-                cout << "Ask if " << rowValue << " is nearest neighbor with " << secondRowValue << endl;
-                for (unsigned int l = 0; l < objectToClassify.size(); ++l){
-                    distance = sqrt(1);
-                    if (distance < nearestNeighborDistance){
-                        nearestNeighborDistance = distance;
-                        nearestNeighborLocation = secondRowValue;
-                        nearestNeighborLabel = classLabels.at(nearestNeighborLocation - 1);
+            if (secondRowValue != rowValue) { //Not comparing same value to itself
+                for (unsigned int l = 0; l < objectToClassify.size(); ++l){ 
+                    for (unsigned int m = 0; m < objectToCompare.size(); ++m){
+                        distance = sqrt(pow(objectToClassify.at(l) - objectToCompare.at(m),2));
+                        if (distance < nearestNeighborDistance){
+                            nearestNeighborDistance = distance;
+                            nearestNeighborLocation = secondRowValue;
+                            nearestNeighborLabel = classLabels.at(nearestNeighborLocation - 1);
+                        }
                     }
                 }
             }
         }
         secondRowValue = 0;
         objectToClassify.clear();
+        objectToCompare.clear();
         data2.close();
+        cout << "Object " << rowValue << " is class " << classLabels.at(rowValue - 1) << endl;
+        cout << "It's nearest neighbor is " << nearestNeighborLocation << " which is in class " << nearestNeighborLabel << endl;
     }
     data.close();
 
-    
     accuracy = rand();
     return accuracy;
 }
