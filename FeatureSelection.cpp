@@ -19,11 +19,11 @@ vector<double> getClassLabels(vector<vector<double>> data){
 //     return data.size();
 // }
 
-vector<vector<double>> readData(){
+vector<vector<double>> readData(string fileName){
     string line, featureValue;
     vector<double> currRow;
     vector<vector<double>> fullData;
-    ifstream file ("CS170_SuperSmall_Data__43.txt");
+    ifstream file (fileName);
     while (getline(file,line)) { //Loop through every row
         stringstream ss(line);
         while (ss >> featureValue) { //Add row values into currRow
@@ -105,7 +105,7 @@ void featureSearch(vector<vector<double>> featureData, vector<double> classLabel
         for (unsigned int k = 0; k < featureData[0].size(); ++k) {
             if (find(currentSetOfFeatures.begin(),currentSetOfFeatures.end(),k) == currentSetOfFeatures.end()){ // If the value is not in the current set of features
                 accuracy = crossValidation(featureData,currentSetOfFeatures,k,classLabels);
-                cout << "--Considering adding the  " << k << " feature with accuracy: " << accuracy << endl;
+                cout << "--Testing the  " << k << " feature with current accuracy of: " << accuracy << endl;
                 if (accuracy > bestSoFarAccuracy){
                     bestSoFarAccuracy = accuracy;
                     featureToAddAtCurrentLevel = k;
@@ -131,16 +131,26 @@ void featureSearch(vector<vector<double>> featureData, vector<double> classLabel
 }
 
 int main(){
-
-    vector<vector<double>> data = readData(); //2 dimensional vector containing row x column
-
+    string fileName;
+    int algorithmNum;
+    cout << "Welcome to Nathan's Feature Selection Algorithm." << endl;
+    cout << "Type in the name of the file to test: " << endl;
+    cin >> fileName;
+    cout << "Type the number of the algorithm you want to run." << endl;
+    cout << "1. Forward Selection" << endl << "2. Backward Elimination" << endl;
+    cin >> algorithmNum;
+    vector<vector<double>> data = readData(fileName); //2 dimensional vector containing row x column
     // unsigned int numRows = getNumRows(data);
-
     vector<double> classLabels = getClassLabels(data); //Vector containing only class labels
-
     vector<vector<double>> dataMinusClass = editData(data); //2 dimensional vector containing only features
+    if (algorithmNum == 1) {
+        featureSearch(dataMinusClass, classLabels);
+    }
+    else if (algorithmNum == 2) {
 
-    featureSearch(dataMinusClass, classLabels);
+    }
+    else 
+        cout << "Invalid input. Exiting" << endl;
 
     return 0;
 }
