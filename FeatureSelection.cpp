@@ -204,11 +204,21 @@ void backwardsFeatureSearch(vector<vector<double>> featureData, vector<double> c
                     bestSoFarAccuracy = accuracy;
                     featureToRemoveAtCurrentLevel = k;
                 }
+                if (accuracy > bestTotalAccuracy){
+                    bestTotalAccuracy = accuracy;
+                    bestFeatures = currentSetOfFeatures;
+                }
             }
         }
         cout << "On level " << i << ", I removed feature " << featureToRemoveAtCurrentLevel << endl;
         currentSetOfFeatures.erase(remove(currentSetOfFeatures.begin(),currentSetOfFeatures.end(),featureToRemoveAtCurrentLevel),currentSetOfFeatures.end());
     }
+    cout << "------------------------------------------------------------" << endl;
+    cout << "Best features to use: " << endl;
+    for (unsigned int i = 0; i < bestFeatures.size(); ++i){ 
+        cout << bestFeatures[i] + 1 << " " ;
+    }
+    cout << endl << "The best accuracy from this data set is: " << bestTotalAccuracy << endl;
 }
 
 int main(){
