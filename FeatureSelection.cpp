@@ -6,10 +6,6 @@
 #include <cmath>
 using namespace std;
 
-// unsigned int getNumRows(vector<vector<double>> data){
-//     return data.size();
-// }
-
 vector<double> getClassLabels(vector<vector<double>> data){
     string line, classLabel;
     vector<double> classLabels;
@@ -224,16 +220,18 @@ void backwardsFeatureSearch(vector<vector<double>> featureData, vector<double> c
 int main(){
     string fileName;
     int algorithmNum;
+    
     cout << "Welcome to Nathan's Feature Selection Algorithm." << endl;
     cout << "Type in the name of the file to test: " << endl;
     cin >> fileName;
     cout << "Type the number of the algorithm you want to run." << endl;
     cout << "1. Forward Selection" << endl << "2. Backward Elimination" << endl;
     cin >> algorithmNum;
+
     vector<vector<double>> data = readData(fileName); //2 dimensional vector containing row x column
-    // unsigned int numRows = getNumRows(data);
     vector<double> classLabels = getClassLabels(data); //Vector containing only class labels
     vector<vector<double>> dataMinusClass = editData(data); //2 dimensional vector containing only features
+
     if (algorithmNum == 1) {
         cout << "Beginning Search" << endl;
         forwardFeatureSearch(dataMinusClass, classLabels);
