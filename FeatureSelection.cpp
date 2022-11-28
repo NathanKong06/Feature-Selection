@@ -92,10 +92,13 @@ double crossValidation(vector<vector<double>> featureData, vector<int> currentSe
 
 void featureSearch(vector<vector<double>> featureData, vector<double> classLabels){
     vector<int> currentSetOfFeatures;
-    double accuracy = 0.0, bestSoFarAccuracy = 0.0;
+    vector<int> bestFeatures;
+    double accuracy = 0.0, bestSoFarAccuracy = 0.0, bestTotalAccuracy = 0.0;
+    int bestFeatureAtLevel;
     
     for (unsigned int i = 0; i < featureData[0].size(); ++i) {
         int featureToAddAtCurrentLevel = -1;
+        int bestFeatureAtLevel = -1;
         bestSoFarAccuracy = 0.0;
         cout << "On the " << i << "th level of the search tree" << endl;
 
@@ -107,12 +110,24 @@ void featureSearch(vector<vector<double>> featureData, vector<double> classLabel
                     bestSoFarAccuracy = accuracy;
                     featureToAddAtCurrentLevel = k;
                 }
+                if (accuracy > bestTotalAccuracy){
+                    bestTotalAccuracy = accuracy;
+                    bestFeatureAtLevel = k;
+                }
             }
         }
         cout << "On level " << i << " I added feature " << featureToAddAtCurrentLevel << endl;
         currentSetOfFeatures.push_back(featureToAddAtCurrentLevel);
+        if (bestFeatureAtLevel >= 0){
+            bestFeatures.push_back(bestFeatureAtLevel);
+        }
+        bestFeatureAtLevel = -1;
     }
-    // cout << "The best accuracy from this data set is: " << bestSoFarAccuracy << endl;
+    cout << endl << "Best features to use: " << endl;
+    for (unsigned int i = 0; i < bestFeatures.size(); ++i){ 
+        cout << bestFeatures[i] + 1 << " " ;
+    }
+    cout << endl << "The best accuracy from this data set is: " << bestTotalAccuracy << endl;
 }
 
 int main(){
