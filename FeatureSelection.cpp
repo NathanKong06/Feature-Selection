@@ -6,6 +6,10 @@
 #include <cmath>
 using namespace std;
 
+// unsigned int getNumRows(vector<vector<double>> data){
+//     return data.size();
+// }
+
 vector<double> getClassLabels(vector<vector<double>> data){
     string line, classLabel;
     vector<double> classLabels;
@@ -14,10 +18,6 @@ vector<double> getClassLabels(vector<vector<double>> data){
     }
     return classLabels;
 }
-
-// unsigned int getNumRows(vector<vector<double>> data){
-//     return data.size();
-// }
 
 vector<vector<double>> readData(string fileName){
     string line, featureValue;
@@ -144,9 +144,11 @@ int main(){
     vector<double> classLabels = getClassLabels(data); //Vector containing only class labels
     vector<vector<double>> dataMinusClass = editData(data); //2 dimensional vector containing only features
     if (algorithmNum == 1) {
+        cout << "Beginning Search" << endl;
         featureSearch(dataMinusClass, classLabels);
     }
     else if (algorithmNum == 2) {
+        cout << "Beginning Search" << endl;
 
     }
     else 
