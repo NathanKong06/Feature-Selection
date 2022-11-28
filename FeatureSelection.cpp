@@ -43,7 +43,21 @@ vector<vector<double>> editData(vector<vector<double>> data){
     return data;
 }
 
+vector<vector<double>> removeFeatures(vector<vector<double>> featureData, vector<int> classSet, int featureToAdd){
+    vector<int> columnsToRemove = classSet;
+    columnsToRemove.push_back(featureToAdd);
+    for (unsigned int i = 0; i < featureData.size(); ++i) {
+        for (unsigned int j = 0; j < featureData[i].size(); ++j) {
+            if (find(columnsToRemove.begin(), columnsToRemove.end(), j) != columnsToRemove.end()){
+                featureData[i][j] = 0;
+            }
+        }
+    }
+    return featureData;
+}
+
 double crossValidation(vector<vector<double>> featureData, vector<int> currentSet, int featureToAdd, vector<double> classLabels){
+    featureData = removeFeatures(featureData, currentSet, featureToAdd);
     double accuracy = 0.0, distance = 0.0, classLabelToClassify, nearestNeighborDistance, nearestNeighborLocation, nearestNeighborLabel, numCorrectlyClassified = 0.0;
     vector <double> objectToClassify, objectToCompare;
 
@@ -76,7 +90,7 @@ double crossValidation(vector<vector<double>> featureData, vector<int> currentSe
     return accuracy;
 }
 
-void featureSearch(vector<vector<double>> featureData){
+void featureSearch(vector<vector<double>> featureData, vector<double> classLabels){
     vector<int> currentSetOfFeatures;
     double accuracy = 0.0;
     
@@ -88,14 +102,14 @@ void featureSearch(vector<vector<double>> featureData){
         for (unsigned int k = 0; k < featureData[0].size(); ++k) {
             if (find(currentSetOfFeatures.begin(),currentSetOfFeatures.end(),k) == currentSetOfFeatures.end()){ // If the value is not in the current set of features
                 cout << "--Considering adding the  " << k << " feature" << endl;
-                accuracy = rand() % 101;
+                accuracy = crossValidation(featureData,currentSetOfFeatures,featureToAddAtCurrentLevel,classLabels);
                 if (accuracy > bestAccuracy){
                     bestAccuracy = accuracy;
                     featureToAddAtCurrentLevel = k;
                 }
             }
         }
-        cout << "On level " << i << "I added feature " << featureToAddAtCurrentLevel << " to current set" << endl;
+        cout << "On level " << i << " I added feature " << featureToAddAtCurrentLevel << " to current set" << endl;
         currentSetOfFeatures.push_back(featureToAddAtCurrentLevel);
     }
 }
@@ -110,9 +124,7 @@ int main(){
 
     vector<vector<double>> dataMinusClass = editData(data); //2 dimensional vector containing only features
 
-    // featureSearch(dataMinusClass);
-    vector<int> temp;
-    cout << crossValidation(dataMinusClass, temp, 0, classLabels);
+    featureSearch(dataMinusClass, classLabels);
 
     return 0;
 }
