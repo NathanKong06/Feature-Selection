@@ -24,10 +24,10 @@ vector<vector<double>> readData(){
     vector<double> currRow;
     vector<vector<double>> fullData;
     ifstream file ("CS170_SuperSmall_Data__43.txt");
-    while (getline(file,line)) {
+    while (getline(file,line)) { //Loop through every row
         stringstream ss(line);
-        while (ss >> featureValue) {
-            currRow.push_back(stod(featureValue));
+        while (ss >> featureValue) { //Add row values into currRow
+            currRow.push_back(stod(featureValue)); //Add curr rows into fullData
         }
         fullData.push_back(currRow);
         currRow.clear();
@@ -38,7 +38,7 @@ vector<vector<double>> readData(){
 
 vector<vector<double>> editData(vector<vector<double>> data){
     for (unsigned int i = 0; i < data.size(); ++i) {
-        data[i].erase(data[i].begin());
+        data[i].erase(data[i].begin()); //Remove class label from current row (Only features in row left)
     }
     return data;
 }
@@ -48,8 +48,8 @@ vector<vector<double>> removeFeatures(vector<vector<double>> featureData, vector
     columnsToRemove.push_back(featureToAdd);
     for (unsigned int i = 0; i < featureData.size(); ++i) {
         for (unsigned int j = 0; j < featureData[i].size(); ++j) {
-            if (find(columnsToRemove.begin(), columnsToRemove.end(), j) != columnsToRemove.end()){
-                featureData[i][j] = 0;
+            if (find(columnsToRemove.begin(), columnsToRemove.end(), j) == columnsToRemove.end()){
+                featureData[i][j] = 0; //Set collumns not in classSet and featureToAdd to 0
             }
         }
     }
@@ -68,13 +68,13 @@ double crossValidation(vector<vector<double>> featureData, vector<int> currentSe
         nearestNeighborLocation = 4294967295;
 
         for (unsigned int k = 0; k < featureData.size(); ++k) {
-            if (k != i) {
+            if (k != i) { //Don't compare same feature to itself
                 distance = 0.0;
                 objectToCompare = featureData[k];
                 for (unsigned int l = 0; l < objectToClassify.size(); ++l) {
                     distance += pow(objectToClassify[l] - objectToCompare[l],2);
                 }
-                distance = sqrt(distance);
+                distance = sqrt(distance); //Calculate distance
                 if (distance < nearestNeighborDistance) {
                     nearestNeighborDistance = distance;
                     nearestNeighborLocation = k;
