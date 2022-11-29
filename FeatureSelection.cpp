@@ -140,8 +140,6 @@ void forwardFeatureSearch(vector<vector<double>> featureData, vector<double> cla
 }
 
 double backwardCrossValidation(vector<vector<double>> featureData, vector<int> currentSet, int featureToRemove, vector<double> classLabels){
-    if (currentSet.size() == 1) // Default Rate
-        return 0.5;
     featureData = removeFromSet(featureData, currentSet, featureToRemove);
     double accuracy = 0.0, distance = 0.0, classLabelToClassify, nearestNeighborDistance, nearestNeighborLocation, nearestNeighborLabel, numCorrectlyClassified = 0.0;
     vector <double> objectToClassify, objectToCompare;
