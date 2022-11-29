@@ -67,11 +67,11 @@ vector<vector<double>> removeFromSet(vector<vector<double>> featureData, vector<
     return featureData;
 }
 
-double crossValidation(vector<vector<double>> featureData, vector<int> currentSet, int featureToAdd, vector<double> classLabels, int userNum){
+double crossValidation(vector<vector<double>> featureData, vector<int> currentSet, int featureToAddOrRemove, vector<double> classLabels, int userNum){
     if (userNum == 1) //Forward Search
-        featureData = removeFeatures(featureData, currentSet, featureToAdd);
+        featureData = removeFeatures(featureData, currentSet, featureToAddOrRemove);
     else if (userNum == 2) //Backwards Elimination
-        featureData = removeFromSet(featureData, currentSet, featureToAdd);
+        featureData = removeFromSet(featureData, currentSet, featureToAddOrRemove);
 
     double accuracy = 0.0, distance = 0.0, classLabelToClassify, nearestNeighborDistance, nearestNeighborLocation, nearestNeighborLabel, numCorrectlyClassified = 0.0;
     vector <double> objectToClassify, objectToCompare;
