@@ -112,12 +112,12 @@ void forwardFeatureSearch(vector<vector<double>> featureData, vector<double> cla
     for (unsigned int i = 0; i < featureData[0].size(); ++i) {
         int featureToAddAtCurrentLevel = -1, bestFeatureAtLevel = -1;
         bestSoFarAccuracy = 0.0;
-        cout << "On the " << i + 1 << "th level of the search tree" << endl;
+        cout << "On level " << i + 1 << " of the search tree" << endl;
 
         for (unsigned int k = 0; k < featureData[0].size(); ++k) { //Loop through every feature (column)
             if (find(currentSetOfFeatures.begin(),currentSetOfFeatures.end(),k) == currentSetOfFeatures.end()){ // If the value is not in the current set of features
                 accuracy = crossValidation(featureData,currentSetOfFeatures,k,classLabels, userNum);
-                cout << "--Testing the " << k + 1 << " feature with current accuracy of: " << accuracy << endl;
+                cout << "--Testing feature " << k + 1 << " with current accuracy of: " << accuracy << endl;
                 if (accuracy > bestSoFarAccuracy){ //Update bestSoFarAcccuracy
                     bestSoFarAccuracy = accuracy;
                     featureToAddAtCurrentLevel = k;
@@ -154,12 +154,12 @@ void backwardsFeatureSearch(vector<vector<double>> featureData, vector<double> c
     for (unsigned int i = 0; i < featureData[0].size(); ++i) {
         int featureToRemoveAtCurrentLevel = -1;
         bestSoFarAccuracy = 0.0;
-        cout << "On the " << i + 1 << "th level of the search tree" << endl;
+        cout << "On level " << i + 1 << " of the search tree" << endl;
 
         for (unsigned int k = 0; k < featureData[0].size(); ++k) {
             if (find(currentSetOfFeatures.begin(),currentSetOfFeatures.end(),k) != currentSetOfFeatures.end()){ // If the value is in the current set of features
                 accuracy = crossValidation(featureData,currentSetOfFeatures,k,classLabels, userNum);
-                cout << "--Testing removing the " << k + 1 << " feature with current accuracy of: " << accuracy <<  " after removing the feature from set" << endl;
+                cout << "--Testing removing feature " << k + 1 << " with current accuracy of: " << accuracy <<  " after removing the feature from the set" << endl;
                 if (accuracy > bestSoFarAccuracy){ //Update bestSoFarAccuracy
                     bestSoFarAccuracy = accuracy;
                     featureToRemoveAtCurrentLevel = k;
