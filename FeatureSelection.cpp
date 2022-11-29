@@ -103,7 +103,6 @@ void forwardFeatureSearch(vector<vector<double>> featureData, vector<double> cla
     vector<int> currentSetOfFeatures;
     vector<int> bestFeatures;
     double accuracy = 0.0, bestSoFarAccuracy = 0.0, bestTotalAccuracy = 0.0;
-    int bestFeatureAtLevel;
     
     for (unsigned int i = 0; i < featureData[0].size(); ++i) {
         int featureToAddAtCurrentLevel = -1;
@@ -188,7 +187,6 @@ void backwardsFeatureSearch(vector<vector<double>> featureData, vector<double> c
     
     for (unsigned int i = 0; i < featureData[0].size(); ++i) {
         int featureToRemoveAtCurrentLevel = -1;
-        int worstFeatureAtLevel = -1;
         bestSoFarAccuracy = 0.0;
         cout << "On the " << i << "th level of the search tree" << endl;
 
@@ -202,7 +200,9 @@ void backwardsFeatureSearch(vector<vector<double>> featureData, vector<double> c
                 }
                 if (accuracy > bestTotalAccuracy){
                     bestTotalAccuracy = accuracy;
+                    bestFeatures.erase(remove(bestFeatures.begin(),bestFeatures.end(),featureToRemoveAtCurrentLevel),bestFeatures.end()); //Maybe incorrect 
                     bestFeatures = currentSetOfFeatures;
+                    bestFeatures.erase(remove(bestFeatures.begin(),bestFeatures.end(),k),bestFeatures.end());
                 }
             }
         }
@@ -220,7 +220,7 @@ void backwardsFeatureSearch(vector<vector<double>> featureData, vector<double> c
 int main(){
     string fileName;
     int algorithmNum;
-    
+
     cout << "Welcome to Nathan's Feature Selection Algorithm." << endl;
     cout << "Type in the name of the file to test: " << endl;
     cin >> fileName;
