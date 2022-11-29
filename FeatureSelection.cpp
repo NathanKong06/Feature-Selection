@@ -4,6 +4,7 @@
 #include <sstream>
 #include <algorithm>
 #include <cmath>
+
 using namespace std;
 
 vector<double> getClassLabels(vector<vector<double>> data){
@@ -23,29 +24,29 @@ vector<vector<double>> readData(string fileName){
     while (getline(file,line)) { //Loop through every row
         stringstream ss(line);
         while (ss >> featureValue) { //Add row values into currRow
-            currRow.push_back(stod(featureValue)); //Add curr rows into fullData
+            currRow.push_back(stod(featureValue)); //Add curr rows into fullData as doubles
         }
         fullData.push_back(currRow);
-        currRow.clear();
+        currRow.clear(); //Clear currRow to get ready for next row's data
     }
     file.close();
     return fullData;
 }
 
 vector<vector<double>> editData(vector<vector<double>> data){
-    for (unsigned int i = 0; i < data.size(); ++i) {
-        data[i].erase(data[i].begin()); //Remove class label from current row (Only features in row left)
+    for (unsigned int i = 0; i < data.size(); ++i) { //Remove class label from every row so only features in the row remains
+        data[i].erase(data[i].begin()); 
     }
     return data;
 }
 
 vector<vector<double>> removeFeatures(vector<vector<double>> featureData, vector<int> classSet, int featureToAdd){
     vector<int> columnsToKeep = classSet;
-    columnsToKeep.push_back(featureToAdd);
+    columnsToKeep.push_back(featureToAdd); //Columns we want to keep, 0 out every other column
     for (unsigned int i = 0; i < featureData.size(); ++i) {
         for (unsigned int j = 0; j < featureData[i].size(); ++j) {
             if (find(columnsToKeep.begin(), columnsToKeep.end(), j) == columnsToKeep.end()){
-                featureData[i][j] = 0; //Set collumns not in classSet and featureToAdd to 0
+                featureData[i][j] = 0; //Set columns not in classSet and featureToAdd to 0
             }
         }
     }
@@ -54,26 +55,30 @@ vector<vector<double>> removeFeatures(vector<vector<double>> featureData, vector
 
 vector<vector<double>> removeFromSet(vector<vector<double>> featureData, vector<int> classSet, int featureToRemove){
     vector<int> columnsToKeep = classSet;
-    columnsToKeep.erase(remove(columnsToKeep.begin(),columnsToKeep.end(),featureToRemove),columnsToKeep.end());
+    columnsToKeep.erase(remove(columnsToKeep.begin(),columnsToKeep.end(),featureToRemove),columnsToKeep.end()); 
     for (unsigned int i = 0; i < featureData.size(); ++i) {
         for (unsigned int j = 0; j < featureData[i].size(); ++j) {
             if (find(columnsToKeep.begin(), columnsToKeep.end(), j) == columnsToKeep.end()){
-                featureData[i][j] = 0; //Set collumns not in classSet and featureToAdd to 0
+                featureData[i][j] = 0; //Set columns not in classSet ato 0
             }
         }
     }
     return featureData;
 }
 
-double forwardCrossValidation(vector<vector<double>> featureData, vector<int> currentSet, int featureToAdd, vector<double> classLabels){
-    featureData = removeFeatures(featureData, currentSet, featureToAdd);
+double crossValidation(vector<vector<double>> featureData, vector<int> currentSet, int featureToAdd, vector<double> classLabels, int userNum){
+    if (userNum == 1) //Forward Search
+        featureData = removeFeatures(featureData, currentSet, featureToAdd);
+    else if (userNum == 2) //Backwards Elimination
+        featureData = removeFromSet(featureData, currentSet, featureToAdd);
+
     double accuracy = 0.0, distance = 0.0, classLabelToClassify, nearestNeighborDistance, nearestNeighborLocation, nearestNeighborLabel, numCorrectlyClassified = 0.0;
     vector <double> objectToClassify, objectToCompare;
 
     for (unsigned int i = 0; i < featureData.size(); ++i) {
         objectToClassify = featureData[i];
         classLabelToClassify = classLabels[i];
-        nearestNeighborDistance = 4294967295;
+        nearestNeighborDistance = 4294967295; //Some large value for initialization
         nearestNeighborLocation = 4294967295;
 
         for (unsigned int k = 0; k < featureData.size(); ++k) {
@@ -84,14 +89,14 @@ double forwardCrossValidation(vector<vector<double>> featureData, vector<int> cu
                     distance += pow(objectToClassify[l] - objectToCompare[l],2);
                 }
                 distance = sqrt(distance); //Calculate distance
-                if (distance < nearestNeighborDistance) {
+                if (distance < nearestNeighborDistance) { //Update nearestNeighborDistance, nearestNeighborLocation, and nearestNeighborLabel
                     nearestNeighborDistance = distance;
                     nearestNeighborLocation = k;
                     nearestNeighborLabel = classLabels[k];
                 }
             }
         }
-        if (classLabelToClassify == nearestNeighborLabel) {
+        if (classLabelToClassify == nearestNeighborLabel) { //If correctly classified
             numCorrectlyClassified++;
         }
     }
@@ -99,26 +104,24 @@ double forwardCrossValidation(vector<vector<double>> featureData, vector<int> cu
     return accuracy;
 }
 
-void forwardFeatureSearch(vector<vector<double>> featureData, vector<double> classLabels){
-    vector<int> currentSetOfFeatures;
-    vector<int> bestFeatures;
+void forwardFeatureSearch(vector<vector<double>> featureData, vector<double> classLabels, int userNum){
+    vector<int> currentSetOfFeatures, bestFeatures;
     double accuracy = 0.0, bestSoFarAccuracy = 0.0, bestTotalAccuracy = 0.0;
     
     for (unsigned int i = 0; i < featureData[0].size(); ++i) {
-        int featureToAddAtCurrentLevel = -1;
-        int bestFeatureAtLevel = -1;
+        int featureToAddAtCurrentLevel = -1, bestFeatureAtLevel = -1;
         bestSoFarAccuracy = 0.0;
         cout << "On the " << i << "th level of the search tree" << endl;
 
-        for (unsigned int k = 0; k < featureData[0].size(); ++k) {
+        for (unsigned int k = 0; k < featureData[0].size(); ++k) { //Loop through every feature (column)
             if (find(currentSetOfFeatures.begin(),currentSetOfFeatures.end(),k) == currentSetOfFeatures.end()){ // If the value is not in the current set of features
-                accuracy = forwardCrossValidation(featureData,currentSetOfFeatures,k,classLabels);
+                accuracy = crossValidation(featureData,currentSetOfFeatures,k,classLabels, userNum);
                 cout << "--Testing the " << k << " feature with current accuracy of: " << accuracy << endl;
-                if (accuracy > bestSoFarAccuracy){
+                if (accuracy > bestSoFarAccuracy){ //Update bestSoFarAcccuracy
                     bestSoFarAccuracy = accuracy;
                     featureToAddAtCurrentLevel = k;
                 }
-                if (accuracy > bestTotalAccuracy){
+                if (accuracy > bestTotalAccuracy){ //Update bestTotalAccuracy
                     bestTotalAccuracy = accuracy;
                     bestFeatureAtLevel = k;
                 }
@@ -139,45 +142,9 @@ void forwardFeatureSearch(vector<vector<double>> featureData, vector<double> cla
     cout << endl << "The best accuracy from this data set is: " << bestTotalAccuracy << endl;
 }
 
-double backwardCrossValidation(vector<vector<double>> featureData, vector<int> currentSet, int featureToRemove, vector<double> classLabels){
-    featureData = removeFromSet(featureData, currentSet, featureToRemove);
-    double accuracy = 0.0, distance = 0.0, classLabelToClassify, nearestNeighborDistance, nearestNeighborLocation, nearestNeighborLabel, numCorrectlyClassified = 0.0;
-    vector <double> objectToClassify, objectToCompare;
-
-    for (unsigned int i = 0; i < featureData.size(); ++i) {
-        objectToClassify = featureData[i];
-        classLabelToClassify = classLabels[i];
-        nearestNeighborDistance = 4294967295;
-        nearestNeighborLocation = 4294967295;
-
-        for (unsigned int k = 0; k < featureData.size(); ++k) {
-            if (k != i) { //Don't compare same feature to itself
-                distance = 0.0;
-                objectToCompare = featureData[k];
-                for (unsigned int l = 0; l < objectToClassify.size(); ++l) {
-                    distance += pow(objectToClassify[l] - objectToCompare[l],2);
-                }
-                distance = sqrt(distance); //Calculate distance
-                if (distance < nearestNeighborDistance) {
-                    nearestNeighborDistance = distance;
-                    nearestNeighborLocation = k;
-                    nearestNeighborLabel = classLabels[k];
-                }
-            }
-        }
-        if (classLabelToClassify == nearestNeighborLabel) {
-            numCorrectlyClassified++;
-        }
-    }
-    accuracy = numCorrectlyClassified / featureData.size();
-    return accuracy;
-}
-
-void backwardsFeatureSearch(vector<vector<double>> featureData, vector<double> classLabels){
-    vector<int> currentSetOfFeatures;
-    vector<int> bestFeatures;
+void backwardsFeatureSearch(vector<vector<double>> featureData, vector<double> classLabels, int userNum){
+    vector<int> currentSetOfFeatures, bestFeatures;
     double accuracy = 0, bestSoFarAccuracy = 0.0, bestTotalAccuracy = 0.0;
-    int bestFeatureAtLevel;
 
     for (unsigned int i = 0; i < featureData[0].size(); ++i) { //Start with every feature 
         currentSetOfFeatures.push_back(i);
@@ -190,22 +157,21 @@ void backwardsFeatureSearch(vector<vector<double>> featureData, vector<double> c
 
         for (unsigned int k = 0; k < featureData[0].size(); ++k) {
             if (find(currentSetOfFeatures.begin(),currentSetOfFeatures.end(),k) != currentSetOfFeatures.end()){ // If the value is in the current set of features
-                accuracy = backwardCrossValidation(featureData,currentSetOfFeatures,k,classLabels);
+                accuracy = crossValidation(featureData,currentSetOfFeatures,k,classLabels, userNum);
                 cout << "--Testing removing the " << k << " feature with current accuracy of: " << accuracy <<  " after removing the feature from set" << endl;
-                if (accuracy > bestSoFarAccuracy){
+                if (accuracy > bestSoFarAccuracy){ //Update bestSoFarAccuracy
                     bestSoFarAccuracy = accuracy;
                     featureToRemoveAtCurrentLevel = k;
                 }
-                if (accuracy > bestTotalAccuracy){
+                if (accuracy > bestTotalAccuracy){ //Update bestTotalAccuracy
                     bestTotalAccuracy = accuracy;
-                    bestFeatures.erase(remove(bestFeatures.begin(),bestFeatures.end(),featureToRemoveAtCurrentLevel),bestFeatures.end()); //Maybe incorrect 
                     bestFeatures = currentSetOfFeatures;
                     bestFeatures.erase(remove(bestFeatures.begin(),bestFeatures.end(),k),bestFeatures.end());
                 }
             }
         }
         cout << "On level " << i << ", I removed feature " << featureToRemoveAtCurrentLevel << endl;
-        currentSetOfFeatures.erase(remove(currentSetOfFeatures.begin(),currentSetOfFeatures.end(),featureToRemoveAtCurrentLevel),currentSetOfFeatures.end());
+        currentSetOfFeatures.erase(remove(currentSetOfFeatures.begin(),currentSetOfFeatures.end(),featureToRemoveAtCurrentLevel),currentSetOfFeatures.end()); //Remove the feature
     }
     cout << "------------------------------------------------------------" << endl;
     cout << "Best features to use: " << endl;
@@ -232,11 +198,11 @@ int main(){
 
     if (algorithmNum == 1) {
         cout << "Beginning Search" << endl;
-        forwardFeatureSearch(dataMinusClass, classLabels);
+        forwardFeatureSearch(dataMinusClass, classLabels, algorithmNum);
     }
     else if (algorithmNum == 2) {
         cout << "Beginning Search" << endl;
-        backwardsFeatureSearch(dataMinusClass, classLabels);
+        backwardsFeatureSearch(dataMinusClass, classLabels, algorithmNum);
     }
     else 
         cout << "Invalid input. Exiting" << endl;
