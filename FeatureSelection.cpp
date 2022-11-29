@@ -4,6 +4,7 @@
 #include <sstream>
 #include <algorithm>
 #include <cmath>
+#include <chrono>
 
 using namespace std;
 
@@ -198,11 +199,19 @@ int main(){
 
     if (algorithmNum == 1) {
         cout << "Beginning Search" << endl;
+        auto start = std::chrono::high_resolution_clock::now();
         forwardFeatureSearch(dataMinusClass, classLabels, algorithmNum);
+        auto finish = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
+        cout << "Duration: " << duration.count() << " milliseconds" << endl;
     }
     else if (algorithmNum == 2) {
         cout << "Beginning Search" << endl;
+        auto start = std::chrono::high_resolution_clock::now();
         backwardsFeatureSearch(dataMinusClass, classLabels, algorithmNum);
+        auto finish = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
+        cout << "Duration: " << duration.count() << " milliseconds" << endl;
     }
     else 
         cout << "Invalid input. Exiting" << endl;
