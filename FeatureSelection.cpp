@@ -197,6 +197,8 @@ int main(){
     vector<double> classLabels = getClassLabels(data); //Vector containing only class labels
     vector<vector<double>> dataMinusClass = editData(data); //2 dimensional vector containing only features
 
+    cout << "This dataset has " << dataMinusClass[0].size() << " features (not including the class attribute), with " << dataMinusClass.size() << " instances." << endl;
+
     if (algorithmNum == 1) {
         cout << "Beginning Search" << endl;
         auto start = std::chrono::high_resolution_clock::now();
