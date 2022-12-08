@@ -60,7 +60,7 @@ vector<vector<double>> removeFromSet(vector<vector<double>> featureData, vector<
     for (unsigned int i = 0; i < featureData.size(); ++i) {
         for (unsigned int j = 0; j < featureData[i].size(); ++j) {
             if (find(columnsToKeep.begin(), columnsToKeep.end(), j) == columnsToKeep.end()){
-                featureData[i][j] = 0; //Set columns not in classSet ato 0
+                featureData[i][j] = 0; //Set columns not in classSet to 0
             }
         }
     }
@@ -70,7 +70,7 @@ vector<vector<double>> removeFromSet(vector<vector<double>> featureData, vector<
 double crossValidation(vector<vector<double>> featureData, vector<int> currentSet, int featureToAddOrRemove, vector<double> classLabels, int userNum){
     if (userNum == 1) //Forward Search
         featureData = removeFeatures(featureData, currentSet, featureToAddOrRemove);
-    else if (userNum == 2) //Backwards Elimination
+    else if (userNum == 2) //Backward Elimination
         featureData = removeFromSet(featureData, currentSet, featureToAddOrRemove);
 
     double accuracy = 0.0, distance = 0.0, classLabelToClassify, nearestNeighborDistance, nearestNeighborLocation, nearestNeighborLabel, numCorrectlyClassified = 0.0;
@@ -143,7 +143,7 @@ void forwardFeatureSearch(vector<vector<double>> featureData, vector<double> cla
     cout << endl << "The best accuracy from this data set is: " << bestTotalAccuracy << endl;
 }
 
-void backwardsFeatureSearch(vector<vector<double>> featureData, vector<double> classLabels, int userNum){
+void backwardFeatureSearch(vector<vector<double>> featureData, vector<double> classLabels, int userNum){
     vector<int> currentSetOfFeatures, bestFeatures;
     double accuracy = 0, bestSoFarAccuracy = 0.0, bestTotalAccuracy = 0.0;
 
@@ -210,7 +210,7 @@ int main(){
     else if (algorithmNum == 2) {
         cout << "Beginning Search" << endl;
         auto start = std::chrono::high_resolution_clock::now();
-        backwardsFeatureSearch(dataMinusClass, classLabels, algorithmNum);
+        backwardFeatureSearch(dataMinusClass, classLabels, algorithmNum);
         auto finish = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
         cout << "Duration: " << duration.count() << " milliseconds" << endl;
