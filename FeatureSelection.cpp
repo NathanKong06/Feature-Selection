@@ -163,7 +163,7 @@ void backwardFeatureSearch(vector<vector<double>> featureData, vector<double> cl
         for (unsigned int k = 0; k < featureData[0].size(); ++k) {
             if (find(currentSetOfFeatures.begin(),currentSetOfFeatures.end(),k) != currentSetOfFeatures.end()){ // If the value is in the current set of features
                 accuracy = crossValidation(featureData,currentSetOfFeatures,k,classLabels, userNum);
-                cout << "--Testing removing feature " << k + 1 << " with current accuracy of: " << accuracy <<  " after removing the feature from the set {";
+                cout << "--Testing removing feature " << k + 1 << " with current accuracy of: " << accuracy <<  " using feature(s) {";
                 printFeatures = currentSetOfFeatures;
                 printFeatures.erase(remove(printFeatures.begin(),printFeatures.end(),k),printFeatures.end());
                 for (unsigned int i = 0; i < printFeatures.size(); ++i) {
