@@ -117,7 +117,11 @@ void forwardFeatureSearch(vector<vector<double>> featureData, vector<double> cla
         for (unsigned int k = 0; k < featureData[0].size(); ++k) { //Loop through every feature (column)
             if (find(currentSetOfFeatures.begin(),currentSetOfFeatures.end(),k) == currentSetOfFeatures.end()){ // If the value is not in the current set of features
                 accuracy = crossValidation(featureData,currentSetOfFeatures,k,classLabels, userNum);
-                cout << "--Testing feature " << k + 1 << " with current accuracy of: " << accuracy << endl;
+                cout << "--Testing adding feature " << k + 1 << " with current accuracy of: " << accuracy << " using feature(s) {";
+                for (unsigned int i = 0; i < currentSetOfFeatures.size(); ++i) {
+                    cout << currentSetOfFeatures[i] + 1 << ", ";
+                }
+                cout << k + 1 << "} " << endl;
                 if (accuracy > bestSoFarAccuracy){ //Update bestSoFarAcccuracy
                     bestSoFarAccuracy = accuracy;
                     featureToAddAtCurrentLevel = k;
@@ -144,7 +148,7 @@ void forwardFeatureSearch(vector<vector<double>> featureData, vector<double> cla
 }
 
 void backwardFeatureSearch(vector<vector<double>> featureData, vector<double> classLabels, int userNum){
-    vector<int> currentSetOfFeatures, bestFeatures;
+    vector<int> currentSetOfFeatures, bestFeatures, printFeatures;
     double accuracy = 0, bestSoFarAccuracy = 0.0, bestTotalAccuracy = 0.0;
 
     for (unsigned int i = 0; i < featureData[0].size(); ++i) { //Start with every feature 
@@ -159,7 +163,16 @@ void backwardFeatureSearch(vector<vector<double>> featureData, vector<double> cl
         for (unsigned int k = 0; k < featureData[0].size(); ++k) {
             if (find(currentSetOfFeatures.begin(),currentSetOfFeatures.end(),k) != currentSetOfFeatures.end()){ // If the value is in the current set of features
                 accuracy = crossValidation(featureData,currentSetOfFeatures,k,classLabels, userNum);
-                cout << "--Testing removing feature " << k + 1 << " with current accuracy of: " << accuracy <<  " after removing the feature from the set" << endl;
+                cout << "--Testing removing feature " << k + 1 << " with current accuracy of: " << accuracy <<  " after removing the feature from the set {";
+                printFeatures = currentSetOfFeatures;
+                printFeatures.erase(remove(printFeatures.begin(),printFeatures.end(),k),printFeatures.end());
+                for (unsigned int i = 0; i < printFeatures.size(); ++i) {
+                    if (i < printFeatures.size() - 1)
+                        cout << printFeatures[i] + 1 << ", ";
+                    else    
+                        cout << printFeatures[i] + 1;
+                }
+                cout << "}" << endl;
                 if (accuracy > bestSoFarAccuracy){ //Update bestSoFarAccuracy
                     bestSoFarAccuracy = accuracy;
                     featureToRemoveAtCurrentLevel = k;
